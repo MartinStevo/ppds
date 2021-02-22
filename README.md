@@ -4,4 +4,4 @@ Tento repozitár obsahuje výsledky mojej práce na školských projektoch z pre
 
 Pre každý týždeň je vyhradená samostatná vetva.
 
-[Zadanie z 1. týždňa + bonusová úloha z prvej prednášky](https://github.com/MartinStevo/ppds/tree/firstweek)
+[Zadanie z 1. týždňa](https://github.com/MartinStevo/ppds/tree/firstweek)
