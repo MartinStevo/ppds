@@ -22,7 +22,7 @@ class SimpleBarrier:
 
 
 def barrier_example(barrier, thread_id):
-    sleep(randint(1,10) / 10)
+    sleep(randint(1, 10) / 10)
     print("vlakno %d pred barierou" % thread_id)
     barrier.wait()
     print("vlakno %d po bariere" % thread_id)
