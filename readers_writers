@@ -1,0 +1,77 @@
+from fei.ppds import Mutex, print, Semaphore, Thread
+from time import sleep
+from random import randint
+
+
+class ADTLightSwitch:
+    def __init__(self):
+        self.mutex = Mutex()
+        self.counter = 0
+
+    def lock(self, semaphore):
+        self.mutex.lock()
+        self.counter += 1
+        if self.counter == 1:
+            semaphore.wait()
+        self.mutex.unlock()
+
+    def unlock(self, semaphore):
+        self.mutex.lock()
+        self.counter -= 1
+        if self.counter == 0:
+            semaphore.signal()
+        self.mutex.unlock()
+
+
+class Shared:
+    def __init__(self):
+        self.room_empty = Semaphore(1)
+        self.turn = Semaphore(1)
+        self.readLS = ADTLightSwitch()
+
+
+def reader_thread(shared_object, thread):
+    while True:
+        sleep(randint(1, 10) / 10)
+        shared_object.turn.wait()
+        shared_object.turn.signal()
+        shared_object.readLS.lock(shared_object.room_empty)
+        print("reader %s is reading" % (thread))
+        sleep(0.5 + randint(0, 5) / 10)
+        shared_object.readLS.unlock(shared_object.room_empty)
+        sleep(randint(1, 10) / 10)
+
+
+def writer_thread(shared_object, thread):
+    while True:
+        sleep(randint(1, 10) / 10)
+        shared_object.turn.wait()
+        shared_object.room_empty.wait()
+        print("writer %s is writing" % (thread))
+        sleep(0.5 + randint(0, 5) / 10)
+        shared_object.room_empty.signal()
+        shared_object.turn.signal()
+        sleep(randint(1, 10) / 10)
+
+
+shared_object = Shared()
+
+number_of_readers = 20
+number_of_writers = 2
+
+readers = list()
+writers = list()
+
+for i in range(number_of_readers):
+    t = Thread(reader_thread, shared_object, i)
+    readers.append(t)
+
+for i in range(number_of_writers):
+    t = Thread(writer_thread, shared_object, i)
+    writers.append(t)
+
+for t in readers:
+    t.join()
+
+for t in writers:
+    t.join()
