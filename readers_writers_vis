@@ -1,0 +1,110 @@
+from fei.ppds import Mutex, print, Semaphore, Thread
+from time import sleep
+from random import randint
+import matplotlib
+import time
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits import mplot3d
+from matplotlib import cm
+
+
+class ADTLightSwitch:
+    def __init__(self):
+        self.mutex = Mutex()
+        self.counter = 0
+
+    def lock(self, semaphore):
+        self.mutex.lock()
+        self.counter += 1
+        if self.counter == 1:
+            semaphore.wait()
+        self.mutex.unlock()
+
+    def unlock(self, semaphore):
+        self.mutex.lock()
+        self.counter -= 1
+        if self.counter == 0:
+            semaphore.signal()
+        self.mutex.unlock()
+
+
+class Shared:
+    def __init__(self):
+        self.room_empty = Semaphore(1)
+        self.turn = Semaphore(1)
+        self.readLS = ADTLightSwitch()
+
+        self.X = [0] * 20
+        self.Y = [0] * 20
+
+
+def reader_thread(shared_object, thread, timeout, run):
+    while True:
+        if time.time() > timeout:
+            break
+        sleep(randint(1, 10) / 10)
+        shared_object.turn.wait()
+        shared_object.turn.signal()
+        shared_object.readLS.lock(shared_object.room_empty)
+        print("reader %s is reading" % (thread))
+        sleep(0.5)
+        shared_object.readLS.unlock(shared_object.room_empty)
+        sleep(randint(1, 10) / 10)
+
+
+def writer_thread(shared_object, thread, timeout, run):
+    while True:
+        if time.time() > timeout:
+            break
+        sleep(randint(1, 10) / 10)
+        shared_object.turn.wait()
+        shared_object.room_empty.wait()
+        print("writer %s is writing" % (thread))
+        sleep(0.5)
+        shared_object.Y[run] += 1
+        shared_object.room_empty.signal()
+        shared_object.turn.signal()
+        sleep(randint(1, 10) / 10)
+
+
+shared_object = Shared()
+
+number_of_writers = 10
+runtime = 20
+
+readers = list()
+writers = list()
+
+shared_object.X = list(range(5, 101, 5))
+
+for number_of_readers in range(5, 101, 5):
+    print("\nnumber of readers: %d" % (number_of_readers))
+    run = int((number_of_readers / 5) - 1)
+    timeout = time.time() + runtime
+    for i in range(number_of_readers):
+        t = Thread(reader_thread, shared_object, i, timeout, run)
+        readers.append(t)
+
+    for i in range(number_of_writers):
+        t = Thread(writer_thread, shared_object, i, timeout, run)
+        writers.append(t)
+
+    for t in readers:
+        t.join()
+
+    for t in writers:
+        t.join()
+
+    readers.clear()
+    writers.clear()
+
+print(shared_object.X)
+print(shared_object.Y)
+
+fig, ax = plt.subplots()
+ax.set_xlabel('Počet čitateľov')
+ax.set_title('Počet zápisov za čas 20s pri ' +
+             str(number_of_writers) + ' zapisovateľoch')
+plt.bar(shared_object.X, shared_object.Y)
+plt.show()
