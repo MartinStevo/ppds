@@ -1,13 +1,5 @@
-Vitajte!
+# Riešenie
 
-Tento repozitár obsahuje výsledky mojej práce na školských projektoch z predmetu Paralelné programovanie a distribuované systémy.
+V súbore [smokers](https://github.com/MartinStevo/ppds/blob/fifthweek/smokers.py) sa nachádza implementácia problému fajčiarov z prednášky.
 
-Pre každý týždeň je vyhradená samostatná vetva.
-
-[Zadanie z 1. týždňa](https://github.com/MartinStevo/ppds/tree/firstweek)
-
-[Zadanie z 2. týždňa](https://github.com/MartinStevo/ppds/tree/secondweek)
-
-[Zadanie z 3. týždňa](https://github.com/MartinStevo/ppds/tree/thirdweek)
-
-[Zadanie zo 4. týždňa](https://github.com/MartinStevo/ppds/tree/fourthweek)
+Súbor [savages](https://github.com/MartinStevo/ppds/blob/fifthweek/savages.py) predstavuje modifikáciu problému divochov. Ide o synchronizačný problém, kedy sa divosi vždy počkajú, predtým, ako začnú naberať z hrnca. Zároveň máme k dispozícii viacero kuchárov, ktorí sa tiež zídu a spoločne varia. V oboch prípadoch bola použitá bariéra. Po skončení varenia jeden kuchár naplní hrniec a oznámi, že je dovarené. Na toto bolo použité počítadlo. 
