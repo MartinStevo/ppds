@@ -15,3 +15,5 @@ Pre každý týždeň je vyhradená samostatná vetva.
 [Zadanie z 5. týždňa](https://github.com/MartinStevo/ppds/tree/fifthweek)
 
 [Zadanie zo 6. týždňa](https://github.com/MartinStevo/ppds/tree/sixthweek)
+
+[Zadanie z 10. týždňa - 9. cvičenie](https://github.com/MartinStevo/ppds/tree/tenthweek)
